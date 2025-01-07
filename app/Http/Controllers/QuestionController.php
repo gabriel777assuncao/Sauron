@@ -12,8 +12,7 @@ class QuestionController extends Controller
         Question::query()->create(
             request()->validate([
                 'question' => 'required|max:255|min:10|ends_with:?',
-            ],
-            ));
+            ]));
 
         return to_route('dashboard');
     }
