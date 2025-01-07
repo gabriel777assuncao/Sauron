@@ -3,31 +3,64 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
-use function PHPUnit\Framework\assertTrue;
 
 class CreateQuestionTest extends TestCase
 {
+    use LazilyRefreshDatabase;
+
+    private User $user;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->user = User::factory()->create();
+    }
 
     public function test_if_it_will_not_has_more_than_255_caracters(): void
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
+        $this->actingAs($this->user);
 
         $request = $this->post(route('questions.store'), [
-            'question' => Str::repeat('*', 254) . '?',
-            ]);
+            'question' => Str::repeat('*', 254).'?',
+        ]);
 
         $request->assertRedirect(route('dashboard'));
         $this->assertDatabaseCount('questions', 1);
         $this->assertDatabaseHas('questions', [
-            'question' => Str::repeat('*', 254) . '?',
+            'question' => Str::repeat('*', 254).'?',
         ]);
     }
 
     public function test_if_it_will_has_a_question_mark_at_the_end(): void
     {
-        assertTrue(true);
+        $this->actingAs($this->user);
+
+        $request = $this->post(route('questions.store'), [
+            'question' => Str::repeat('*', 8),
+        ]);
+
+        $request->assertSessionHasErrors();
+        $this->assertDatabaseCount('questions', 0);
+        $this->assertDatabaseMissing('questions', [
+            'question' => Str::repeat('*', 8).'?',
+        ]);
+    }
+
+    public function test_if_it_will_has_a_question_has_the_minimum_of_10_caracters(): void
+    {
+        $this->actingAs($this->user);
+
+        $request = $this->post(route('questions.store'), [
+            'question' => Str::repeat('*', 8).'?',
+        ]);
+
+        $request->assertSessionHasErrors();
+        $this->assertDatabaseCount('questions', 0);
+        $this->assertDatabaseMissing('questions', [
+            'question' => Str::repeat('*', 8).'?',
+        ]);
     }
 }
