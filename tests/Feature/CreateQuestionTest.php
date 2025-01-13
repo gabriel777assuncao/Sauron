@@ -39,13 +39,13 @@ class CreateQuestionTest extends TestCase
         $this->actingAs($this->user);
 
         $request = $this->post(route('questions.store'), [
-            'question' => Str::repeat('*', 10),
+            'question' => Str::repeat('*', 8),
         ]);
 
         $request->assertSessionHasErrors();
         $this->assertDatabaseCount('questions', 0);
         $this->assertDatabaseMissing('questions', [
-            'question' => Str::repeat('*', 10),
+            'question' => Str::repeat('*', 8).'?',
         ]);
     }
 
