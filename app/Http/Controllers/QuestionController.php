@@ -15,11 +15,11 @@ class QuestionController extends Controller
             'question' => [
                 'required',
                 'min:10',
-                function (string $attribute, mixed $value, Closure $fail){
+                function (string $attribute, mixed $value, Closure $fail) {
                     if (! Str::endsWith($value, '?')) {
                         $fail(__('messages.custom.question.invalid-content'));
                     }
-                }
+                },
             ],
         ]);
 
