@@ -2,21 +2,29 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if (app()->environment('local')) {
-        auth()->loginUsingId(1);
 
-        return to_route('dashboard');
+        $user = User::find(1);
+
+        if ($user) {
+            auth()->loginUsingId(1);
+
+            return to_route('dashboard');
+        } else {
+            return 'User with ID 1 does not exist.';
+        }
     }
 
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', QuestionController::class)
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

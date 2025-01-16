@@ -2,12 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Models\Question;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
-class CreateQuestionTest extends TestCase
+class QuestionControllerTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
@@ -62,5 +63,20 @@ class CreateQuestionTest extends TestCase
         $this->assertDatabaseMissing('questions', [
             'question' => Str::repeat('*', 8).'?',
         ]);
+    }
+
+    public function test_if_it_will_list_all_questions_correctly(): void
+    {
+        $this->actingAs($this->user);
+        $questions = Question::factory()->count(10)->create();
+
+        $request = $this->get(route('dashboard'));
+        $request->assertStatus(200)
+            ->assertViewIs('dashboard')
+            ->assertViewHas('questions', function ($viewQuestions) use ($questions) {
+                return $viewQuestions->count() === $questions->count();
+            });
+
+        $this->assertDatabaseCount('questions', 10);
     }
 }

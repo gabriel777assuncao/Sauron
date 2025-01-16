@@ -9,7 +9,7 @@ class QuestionFactory extends Factory
     public function definition(): array
     {
         return [
-            'question' => fake()->title().'?',
+            'question' => fake()->text(50).'?',
         ];
     }
 }
