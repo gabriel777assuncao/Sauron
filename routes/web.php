@@ -12,6 +12,7 @@ Route::get('/', function () {
 
         if ($user) {
             auth()->loginUsingId(1);
+
             return to_route('dashboard');
         } else {
             return 'User with ID 1 does not exist.';
