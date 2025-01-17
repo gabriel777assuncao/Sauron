@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
 use App\Models\User;
@@ -32,5 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::post('question/store', [QuestionController::class, 'store'])->name('questions.store');
+Route::post('/question/store', [QuestionController::class, 'store'])->name('questions.store');
+Route::post('/question/{question}/like', LikeController::class)->name('questions.like');
+
 require __DIR__.'/auth.php';
