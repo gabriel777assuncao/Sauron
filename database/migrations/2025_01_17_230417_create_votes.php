@@ -15,7 +15,7 @@ return new class extends Migration
             $table->foreign('question_id')->references('id')->on('questions')->cascadeOnDelete();
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->unsignedInteger('likes')->default(0);
-            $table->unsignedInteger('unlike')->default(0);
+            $table->unsignedInteger('unlikes')->default(0);
             $table->timestamps();
         });
     }

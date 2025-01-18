@@ -8,7 +8,7 @@ class VotesFactory
     {
         return [
             'likes' => fake()->numberBetween(0, 100),
-            'unlike' => fake()->numberBetween(0, 100),
+            'unlikes' => fake()->numberBetween(0, 100),
         ];
     }
 }
