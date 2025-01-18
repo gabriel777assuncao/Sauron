@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
-class LikeController extends TestCase
+class LikeControllerTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
@@ -23,7 +23,7 @@ class LikeController extends TestCase
         $this->question = Question::factory()->create();
     }
 
-    public function test_if_it_will_be_able_like_a_question(): void
+    public function test_if_it_will_be_able_to_like_a_question(): void
     {
         $this->actingAs($this->user);
 
@@ -33,7 +33,22 @@ class LikeController extends TestCase
         $this->assertDatabaseHas('votes', [
             'likes' => 1,
             'question_id' => $this->question->id,
-            'unlike' => 0,
+            'unlikes' => 0,
+            'user_id' => $this->user->id,
+        ]);
+    }
+
+    public function test_if_it_will_be_able_to_unlike_a_question(): void
+    {
+        $this->actingAs($this->user);
+
+        $request = $this->post(route('questions.unlike', $this->question), ['question' => $this->question->id]);
+        $request->assertRedirect();
+
+        $this->assertDatabaseHas('votes', [
+            'likes' => 0,
+            'question_id' => $this->question->id,
+            'unlikes' => 1,
             'user_id' => $this->user->id,
         ]);
     }
