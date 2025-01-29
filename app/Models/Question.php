@@ -15,14 +15,4 @@ class Question extends Model
     {
         return $this->hasMany(Votes::class);
     }
-
-    public function countLikes(): Attribute
-    {
-        return new Attribute(fn () => $this->votes()->sum('likes'));
-    }
-
-    public function countUnlikes(): Attribute
-    {
-        return new Attribute(fn () => $this->votes()->sum('unlikes'));
-    }
 }

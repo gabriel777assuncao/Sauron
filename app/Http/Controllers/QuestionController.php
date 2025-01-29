@@ -13,7 +13,17 @@ class QuestionController extends Controller
     public function __invoke(): View
     {
         return view('dashboard', [
-            'questions' => Question::query()->latest()->get(),
+            'questions' => Question::query()
+                ->withCount([
+                    'votes as count_likes' => function ($query) {
+                        $query->where('likes', '>', 0);
+                    },
+                    'votes as count_unlikes' => function ($query) {
+                        $query->where('unlikes', '>', 0);
+                    },
+                ])
+                ->latest()
+                ->get(),
         ]);
     }
 
