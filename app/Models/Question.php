@@ -10,6 +10,10 @@ class Question extends Model
 {
     use HasFactory;
 
+    protected array $cast = [
+        'draft' => 'boolean',
+    ];
+
     public function votes(): HasMany
     {
         return $this->hasMany(Votes::class);

@@ -79,4 +79,17 @@ class QuestionControllerTest extends TestCase
 
         $this->assertDatabaseCount('questions', 10);
     }
+
+    public function test_if_it_will_create_a_question_always_in_draft(): void
+    {
+        $this->actingAs($this->user);
+
+        $request = $this->post(route('questions.store'), [
+            'question' => Str::repeat('*', 10).'?',
+        ]);
+
+        $this->assertDatabaseHas('questions', [
+            'draft' => true,
+        ]);
+    }
 }

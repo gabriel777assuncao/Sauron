@@ -9,6 +9,7 @@ class QuestionFactory extends Factory
     public function definition(): array
     {
         return [
+            'draft' => fake()->boolean(),
             'question' => fake()->text(50).'?',
         ];
     }
