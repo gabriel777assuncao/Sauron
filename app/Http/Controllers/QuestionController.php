@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Question;
 use Closure;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class QuestionController extends Controller
 {
+    use AuthorizesRequests;
+
     public function __invoke(): View
     {
         return view('dashboard', [
@@ -41,7 +44,16 @@ class QuestionController extends Controller
             ],
         ]);
 
-        Question::query()->create([...$attributes, 'draft' => true]);
+        Question::query()->create([...$attributes, 'draft' => true, 'created_by' => auth()->id()]);
+
+        return to_route('dashboard');
+    }
+
+    public function publish(Question $question): RedirectResponse
+    {
+        $this->authorize('publish', $question);
+
+        $question->update(['draft' => false]);
 
         return to_route('dashboard');
     }
