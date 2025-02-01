@@ -141,4 +141,17 @@ class QuestionControllerTest extends TestCase
         $this->get(route('questions.index'))->assertSee($question->question);
         $this->get(route('questions.index'))->assertDontSee($otherQuestion->question);
     }
+
+    public function test_if_it_user_can_delete_his_own_question(): void
+    {
+        $this->actingAs($this->user);
+        $question = Question::factory()->for($this->user, 'createdBy')->create(['draft' => false]);
+
+        $this->delete(route('questions.destroy', $question))
+            ->assertRedirect();
+
+        $this->assertDatabaseMissing('questions', [
+            'id' => $question->id,
+        ]);
+    }
 }
