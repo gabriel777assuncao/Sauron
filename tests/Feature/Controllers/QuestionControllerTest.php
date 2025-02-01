@@ -29,7 +29,6 @@ class QuestionControllerTest extends TestCase
             'created_by' => $this->user->id,
         ]);
 
-        $request->assertRedirect(route('dashboard'));
         $this->assertDatabaseCount('questions', 1);
         $this->assertDatabaseHas('questions', [
             'question' => Str::repeat('*', 254).'?',
@@ -129,5 +128,17 @@ class QuestionControllerTest extends TestCase
 
         $this->post(route('questions.store'), $questionData)
             ->assertRedirect(route('login'));
+    }
+
+    public function test_if_the_user_can_see_the_questions_that_he_owns(): void
+    {
+        $this->actingAs($this->user);
+        $otherUser = User::factory()->create();
+
+        $otherQuestion = Question::factory()->for($otherUser, 'createdBy')->create(['draft' => false]);
+        $question = Question::factory()->for($this->user, 'createdBy')->create(['draft' => false]);
+
+        $this->get(route('questions.index'))->assertSee($question->question);
+        $this->get(route('questions.index'))->assertDontSee($otherQuestion->question);
     }
 }

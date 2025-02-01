@@ -30,6 +30,13 @@ class QuestionController extends Controller
         ]);
     }
 
+    public function index(): View
+    {
+        return view(('questions.index'), [
+            'questions' => auth()->user()->questions,
+        ]);
+    }
+
     public function store(): RedirectResponse
     {
         $attributes = request()->validate([
@@ -46,7 +53,7 @@ class QuestionController extends Controller
 
         Question::query()->create([...$attributes, 'draft' => true, 'created_by' => auth()->id()]);
 
-        return to_route('dashboard');
+        return back();
     }
 
     public function publish(Question $question): RedirectResponse
