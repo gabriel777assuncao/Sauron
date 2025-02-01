@@ -119,4 +119,15 @@ class QuestionControllerTest extends TestCase
         $this->putJson(route('questions.publish', $question))
             ->assertForbidden();
     }
+
+    public function test_if_only_auth_users_can_store_questions(): void
+    {
+        $questionData = [
+            'question' => Str::repeat('*', 10).'?',
+            'created_by' => $this->user->id,
+        ];
+
+        $this->post(route('questions.store'), $questionData)
+            ->assertRedirect(route('login'));
+    }
 }
