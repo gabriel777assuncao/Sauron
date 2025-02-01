@@ -64,4 +64,13 @@ class QuestionController extends Controller
 
         return to_route('dashboard');
     }
+
+    public function destroy(Question $question): RedirectResponse
+    {
+        $this->authorize('destroy', $question);
+
+        $question->delete();
+
+        return back();
+    }
 }
