@@ -154,4 +154,31 @@ class QuestionControllerTest extends TestCase
             'id' => $question->id,
         ]);
     }
+
+    public function test_if_it_will_be_able_to_open_a_question_to_edit(): void
+    {
+        $this->actingAs($this->user);
+
+        $question = Question::factory()->for($this->user, 'createdBy')->create(['draft' => true]);
+
+        $this->get(route('questions.edit', $question))
+            ->assertSuccessful()
+            ->assertViewIs('questions.edit');
+    }
+
+    public function test_if_it_the_only_draft_questions_can_be_drafted(): void
+    {
+        $this->actingAs($this->user);
+
+        $question1 = Question::factory()->for($this->user, 'createdBy')->create(['draft' => true]);
+        $question2 = Question::factory()->for($this->user, 'createdBy')->create(['draft' => false]);
+
+        $this->get(route('questions.edit', $question1))
+            ->assertValid()
+            ->assertStatus(200);
+
+        $this->get(route('questions.edit', $question2))
+            ->assertValid()
+            ->assertStatus(403);
+    }
 }
