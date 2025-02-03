@@ -37,6 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/question', [QuestionController::class, 'index'])->name('questions.index');
+    Route::put('/question/{question}', [QuestionController::class, 'update'])->name('questions.update');
     Route::get('/question/{question}', [QuestionController::class, 'edit'])->name('questions.edit');
     Route::delete('/question/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
     Route::post('/question/store', [QuestionController::class, 'store'])->name('questions.store');

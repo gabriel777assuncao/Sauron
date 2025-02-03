@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Questions\StoreRequest;
+use App\Http\Requests\Questions\UpdateRequest;
 use App\Models\Question;
-use Closure;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class QuestionController extends Controller
@@ -37,19 +37,10 @@ class QuestionController extends Controller
         ]);
     }
 
-    public function store(): RedirectResponse
+    public function store(StoreRequest $request): RedirectResponse
     {
-        $attributes = request()->validate([
-            'question' => [
-                'required',
-                'min:10',
-                function (string $attribute, mixed $value, Closure $fail) {
-                    if (! Str::endsWith($value, '?')) {
-                        $fail(__('messages.custom.question.invalid-content'));
-                    }
-                },
-            ],
-        ]);
+        auth()->user();
+        $attributes = $request->validated();
 
         Question::query()->create([...$attributes, 'draft' => true, 'created_by' => auth()->id()]);
 
@@ -79,5 +70,16 @@ class QuestionController extends Controller
         $this->authorize('edit', $question);
 
         return view('questions.edit', compact('question'));
+    }
+
+    public function update(Question $question, UpdateRequest $request): RedirectResponse
+    {
+        $this->authorize('edit', $question);
+
+        $attributes = $request->validated();
+
+        $question->update($attributes);
+
+        return back();
     }
 }

@@ -21,4 +21,9 @@ class QuestionPolicy
     {
         return $question->createdBy->is($user) && $question->draft;
     }
+
+    public function update(User $user, Question $question): bool
+    {
+        return $question->createdBy->is($user);
+    }
 }
