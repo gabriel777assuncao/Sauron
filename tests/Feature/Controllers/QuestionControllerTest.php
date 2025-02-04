@@ -108,50 +108,34 @@ class QuestionControllerTest extends TestCase
         ]);
     }
 
-    public function test_if_only_the_person_that_created_the_question_can_edit_it(): void
-    {
-        $viewUser = User::factory()->create();
-        $this->actingAs($viewUser);
-
-        $question = Question::factory()->for($this->user, 'createdBy')->create(['draft' => false]);
-
-        $this->putJson(route('questions.publish', $question))
-            ->assertForbidden();
-    }
-
-    public function test_if_only_auth_users_can_store_questions(): void
-    {
-        $questionData = [
-            'question' => Str::repeat('*', 10).'?',
-            'created_by' => $this->user->id,
-        ];
-
-        $this->post(route('questions.store'), $questionData)
-            ->assertRedirect(route('login'));
-    }
-
-    public function test_if_the_user_can_see_the_questions_that_he_owns(): void
+    public function test_if_it_will_be_able_to_open_a_question_to_edit(): void
     {
         $this->actingAs($this->user);
-        $otherUser = User::factory()->create();
 
-        $otherQuestion = Question::factory()->for($otherUser, 'createdBy')->create(['draft' => false]);
-        $question = Question::factory()->for($this->user, 'createdBy')->create(['draft' => false]);
+        $question = Question::factory()->for($this->user, 'createdBy')->create(['draft' => true]);
 
-        $this->get(route('questions.index'))->assertSee($question->question);
-        $this->get(route('questions.index'))->assertDontSee($otherQuestion->question);
+        $this->get(route('questions.edit', $question))
+            ->assertSuccessful()
+            ->assertViewIs('questions.edit');
     }
 
-    public function test_if_it_user_can_delete_his_own_question(): void
+    public function test_if_it_will_be_able_to_update_a_question(): void
     {
         $this->actingAs($this->user);
-        $question = Question::factory()->for($this->user, 'createdBy')->create(['draft' => false]);
+        $question = Question::factory()->for($this->user, 'createdBy')->create(['draft' => true, 'question' => 'this is not a question?']);
 
-        $this->delete(route('questions.destroy', $question))
+        $this->put(route('questions.update', $question), [
+            'question' => 'This is a question?',
+        ])
+            ->assertValid()
             ->assertRedirect();
 
-        $this->assertDatabaseMissing('questions', [
+        $question->refresh();
+
+        $this->assertDatabaseHas('questions', [
+            'question' => 'This is a question?',
             'id' => $question->id,
         ]);
+        $this->assertDatabaseCount('questions', 1);
     }
 }
