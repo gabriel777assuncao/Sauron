@@ -25,8 +25,9 @@ class QuestionController extends Controller
                         $query->where('unlikes', '>', 0);
                     },
                 ])
-                ->latest()
-                ->get(),
+                ->orderByDesc('count_likes')
+                ->orderByDesc('count_unlikes')
+                ->paginate(10),
         ]);
     }
 
