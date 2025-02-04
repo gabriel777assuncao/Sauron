@@ -136,5 +136,6 @@ class QuestionControllerTest extends TestCase
             'question' => 'This is a question?',
             'id' => $question->id,
         ]);
+        $this->assertDatabaseCount('questions', 1);
     }
 }

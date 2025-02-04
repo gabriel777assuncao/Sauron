@@ -80,6 +80,6 @@ class QuestionController extends Controller
 
         $question->update($attributes);
 
-        return back();
+        return to_route('questions.index');
     }
 }
