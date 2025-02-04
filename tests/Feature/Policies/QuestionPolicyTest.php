@@ -4,17 +4,19 @@ namespace Tests\Feature\Policies;
 
 use App\Models\Question;
 use App\Models\User;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class QuestionPolicyTest extends TestCase
 {
+    use LazilyRefreshDatabase;
+
     private User $user;
 
     protected function setUp(): void
     {
         parent::setUp();
-
         $this->user = User::factory()->create();
     }
 
