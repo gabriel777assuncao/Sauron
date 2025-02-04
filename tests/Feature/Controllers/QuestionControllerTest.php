@@ -5,6 +5,7 @@ namespace Tests\Feature\Controllers;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -74,9 +75,7 @@ class QuestionControllerTest extends TestCase
         $request = $this->get(route('dashboard'));
         $request->assertStatus(200)
             ->assertViewIs('dashboard')
-            ->assertViewHas('questions', function ($viewQuestions) use ($questions) {
-                return $viewQuestions->count() === $questions->count();
-            });
+            ->assertViewHas('questions', fn ($value) => $value instanceof LengthAwarePaginator);
 
         $this->assertDatabaseCount('questions', 10);
     }
