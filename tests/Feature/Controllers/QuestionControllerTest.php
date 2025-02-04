@@ -75,7 +75,7 @@ class QuestionControllerTest extends TestCase
         $request = $this->get(route('dashboard'));
         $request->assertStatus(200)
             ->assertViewIs('dashboard')
-            ->assertViewHas('questions', fn($value) => $value instanceof  LengthAwarePaginator);
+            ->assertViewHas('questions', fn ($value) => $value instanceof LengthAwarePaginator);
 
         $this->assertDatabaseCount('questions', 10);
     }

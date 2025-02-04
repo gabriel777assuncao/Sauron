@@ -17,7 +17,7 @@ class Question extends Model
 
     protected $fillable = [
         'created_by',
-        'votes'
+        'votes',
     ];
 
     public function votes(): HasMany
