@@ -137,4 +137,38 @@ class QuestionControllerTest extends TestCase
         ]);
         $this->assertDatabaseCount('questions', 1);
     }
+
+    public function test_if_it_will_be_able_to_archive_a_question(): void
+    {
+        $this->actingAs($this->user);
+        $question = Question::factory()->for($this->user, 'createdBy')->create(['draft' => false]);
+
+        $this->patch(route('questions.archive', $question))
+            ->assertRedirect();
+
+        $this->assertSoftDeleted('questions', [
+            'id' => $question->id,
+        ]);
+
+        $this->assertDatabaseHas('questions', [
+            'id' => $question->id,
+            'deleted_at' => now(),
+        ]);
+    }
+
+    public function test_if_it_will_be_able_to_restore_a_question(): void
+    {
+        $this->actingAs($this->user);
+        $question = Question::factory()->for($this->user, 'createdBy')->create(['draft' => false, 'deleted_at' => now()]);
+
+        $this->patch(route('questions.restore', $question))
+            ->assertRedirect();
+
+        $question->refresh();
+
+        $this->assertDatabaseHas('questions', [
+            'id' => $question->id,
+            'deleted_at' => null,
+        ]);
+    }
 }
