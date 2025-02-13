@@ -49,6 +49,23 @@ class QuestionPolicyTest extends TestCase
         ]);
     }
 
+    public function test_if_it_user_can_archive_his_own_question(): void
+    {
+        $rightUser = User::factory()->create();
+        $wrongUser = User::factory()->create();
+        $question = Question::factory()->create(['draft' => true, 'created_by' => $rightUser->id]);
+
+        $this->actingAs($wrongUser);
+
+        $this->patch(route('questions.archive', $question))
+            ->assertForbidden();
+
+        $this->actingAs($rightUser);
+
+        $this->patch(route('questions.archive', $question))
+            ->assertRedirect();
+    }
+
     public function test_if_the_user_can_see_the_questions_that_he_owns(): void
     {
         $this->actingAs($this->user);

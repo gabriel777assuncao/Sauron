@@ -7,6 +7,11 @@ use App\Models\User;
 
 class QuestionPolicy
 {
+    public function archive(User $user, Question $question): bool
+    {
+        return $question->createdBy->is($user);
+    }
+
     public function publish(User $user, Question $question): bool
     {
         return $question->createdBy->is($user);

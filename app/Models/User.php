@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -48,6 +47,10 @@ class User extends Authenticatable implements MustVerifyEmail
             ['question_id' => $question->id],
             ['likes' => 1, 'unlikes' => 0]
         );
+
+        $this->questions()->update([
+            'votes_count' => 1,
+        ]);
     }
 
     public function unlike(Question $question): void
@@ -56,5 +59,9 @@ class User extends Authenticatable implements MustVerifyEmail
             ['question_id' => $question->id],
             ['likes' => 0, 'unlikes' => 1]
         );
+
+        $this->questions()->update([
+            'votes_count' => 1,
+        ]);
     }
 }
