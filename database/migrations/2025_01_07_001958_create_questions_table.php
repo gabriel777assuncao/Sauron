@@ -17,6 +17,7 @@ return new class extends Migration
             $table->boolean('draft')->default(true);
             $table->foreignIdFor(User::class, 'created_by')->constrained()->cascadeOnDelete();
             $table->text('question');
+            $table->bigInteger('votes_count')->default(0);
             $table->softDeletes();
             $table->timestamps();
         });

@@ -13,6 +13,7 @@ class QuestionFactory extends Factory
             'draft' => fake()->boolean(),
             'question' => fake()->text(50).'?',
             'created_by' => User::factory(),
+            'votes_count' => fake()->numberBetween(0, 20),
         ];
     }
 }
