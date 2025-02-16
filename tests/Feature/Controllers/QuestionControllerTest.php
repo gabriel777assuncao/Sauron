@@ -171,4 +171,18 @@ class QuestionControllerTest extends TestCase
             'deleted_at' => null,
         ]);
     }
+
+    public function test_if_it_will_not_be_able_to_create_a_duplicated_question(): void
+    {
+        $this->actingAs($this->user);
+        $question = Question::factory()->for($this->user, 'createdBy')->create([
+            'draft' => false,
+            'question' => "That's a repeated question?",
+        ]);
+
+        $this->post(route('questions.store'), [
+            'question' => "That's a repeated question?",
+        ])
+            ->assertSessionHasErrors();
+    }
 }

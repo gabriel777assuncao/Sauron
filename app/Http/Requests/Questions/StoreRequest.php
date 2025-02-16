@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Questions;
 
+use App\Rules\SameQuestionRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
@@ -18,6 +19,7 @@ class StoreRequest extends FormRequest
                         $fail(__('messages.custom.question.invalid-content'));
                     }
                 },
+                new SameQuestionRule,
             ],
         ];
     }
