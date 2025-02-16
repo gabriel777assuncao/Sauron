@@ -35,6 +35,7 @@ class QuestionController extends Controller
     {
         return view(('questions.index'), [
             'questions' => auth()->user()->questions,
+            'archivedQuestions' => Question::onlyTrashed()->where('created_by', auth()->id())->get(),
         ]);
     }
 
@@ -54,7 +55,7 @@ class QuestionController extends Controller
 
         $question->update(['draft' => false]);
 
-        return to_route('dashboard');
+        return back();
     }
 
     public function archive(Question $question): RedirectResponse
@@ -63,7 +64,7 @@ class QuestionController extends Controller
 
         $question->delete();
 
-        return to_route('dashboard');
+        return back();
     }
 
     public function restore(int $questionId): RedirectResponse
