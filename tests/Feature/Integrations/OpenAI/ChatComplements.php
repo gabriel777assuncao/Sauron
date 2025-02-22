@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Log;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Saloon\Config;
 use Saloon\Exceptions\Request\Statuses\PaymentRequiredException;
-use Saloon\Exceptions\Request\Statuses\TooManyRequestsException;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 use src\OpenAI\Http\OpenAIConnector;
@@ -23,7 +22,7 @@ class ChatComplements extends TestCase
 
     private Question $question;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -42,7 +41,7 @@ class ChatComplements extends TestCase
 
         Log::spy();
 
-        $manager = new ChatComplementsManager(new OpenAIConnector(), new ChatComplement());
+        $manager = new ChatComplementsManager(new OpenAIConnector, new ChatComplement);
         $manager->sendChatComplements('This is a very good question?', []);
 
         Log::shouldHaveReceived('error')->once();
@@ -51,15 +50,15 @@ class ChatComplements extends TestCase
     public function test_if_it_will_throw_an_exception_an_unmapped_exception(): void
     {
         MockClient::global([
-            ChatComplement::class => MockResponse::make(status:Response::HTTP_PAYMENT_REQUIRED),
+            ChatComplement::class => MockResponse::make(status: Response::HTTP_PAYMENT_REQUIRED),
         ]);
 
         Log::spy();
 
-        $manager = new ChatComplementsManager(new OpenAIConnector(), new ChatComplement());
+        $manager = new ChatComplementsManager(new OpenAIConnector, new ChatComplement);
 
         $this->assertThrows(
-            fn() => $manager->sendChatComplements('This is a very good question?', []),
+            fn () => $manager->sendChatComplements('This is a very good question?', []),
             PaymentRequiredException::class
         );
     }

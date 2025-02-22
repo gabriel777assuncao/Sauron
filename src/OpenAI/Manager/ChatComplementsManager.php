@@ -29,7 +29,7 @@ class ChatComplementsManager
             }
 
             return $response;
-        } catch (TooManyRequestsException $exception){
+        } catch (TooManyRequestsException $exception) {
             Log::error(
                 'Error when trying to send a chat complement: too many requests.',
                 [
@@ -38,7 +38,7 @@ class ChatComplementsManager
                     'question' => $question,
                 ],
             );
-        } catch (FatalRequestException $exception){
+        } catch (FatalRequestException $exception) {
             Log::error(
                 'Error when trying to send a chat complement: a fatal error occurred.',
                 [
@@ -47,7 +47,7 @@ class ChatComplementsManager
                     'question' => $question,
                 ],
             );
-        } catch (ForbiddenException $exception){
+        } catch (ForbiddenException $exception) {
             Log::error(
                 'Error when trying to send a chat complement: unauthorized error occurred.',
                 [
@@ -72,4 +72,3 @@ class ChatComplementsManager
         return null;
     }
 }
-
