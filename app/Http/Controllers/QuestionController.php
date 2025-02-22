@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Questions\StoreRequest;
 use App\Http\Requests\Questions\UpdateRequest;
 use App\Models\Question;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -17,6 +18,8 @@ class QuestionController extends Controller
     {
         return view('dashboard', [
             'questions' => Question::query()
+                ->when(request()->has('search'), fn (Builder $query) => $query->where(
+                    'question', 'like', '%'.request()->search.'%'))
                 ->withCount([
                     'votes as count_likes' => function ($query) {
                         $query->where('likes', '>', 0);

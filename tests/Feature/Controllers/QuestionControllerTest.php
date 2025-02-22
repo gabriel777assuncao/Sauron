@@ -182,6 +182,26 @@ class QuestionControllerTest extends TestCase
         ]);
     }
 
+    public function test_if_it_will_search_question_properly(): void
+    {
+        $this->actingAs($this->user);
+        $question = Question::factory()->for($this->user, 'createdBy')->create([
+            'draft' => false,
+            'question' => 'thats a true question?',
+        ]);
+        $otherQuestion = Question::factory()->for($this->user, 'createdBy')->create([
+            'draft' => false,
+            'question' => 'what is going on me?',
+        ]);
+
+        $this->get(route('dashboard', ['search' => 'question']))
+            ->assertSuccessful()
+            ->assertViewIs('dashboard')
+            ->assertViewHas('questions', fn ($value) => $value instanceof LengthAwarePaginator)
+            ->assertSee('thats a true question?')
+            ->assertDontSee('this_is_a_fake_question?');
+    }
+
     public function mockSaloonResponse(): void
     {
         MockClient::global([
