@@ -7,6 +7,11 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
+use Saloon\Config;
+use Saloon\Http\Faking\MockClient;
+use Saloon\Http\Faking\MockResponse;
+use src\OpenAI\Http\Post\ChatComplement;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class QuestionControllerTest extends TestCase
@@ -19,6 +24,11 @@ class QuestionControllerTest extends TestCase
     {
         parent::setUp();
         $this->user = User::factory()->create();
+
+        Config::preventStrayRequests();
+        MockClient::destroyGlobal();
+
+        $this->mockSaloonResponse();
     }
 
     public function test_if_it_will_not_has_more_than_255_caracters(): void
@@ -169,6 +179,13 @@ class QuestionControllerTest extends TestCase
         $this->assertDatabaseHas('questions', [
             'id' => $question->id,
             'deleted_at' => null,
+        ]);
+    }
+
+    public function mockSaloonResponse(): void
+    {
+        MockClient::global([
+            ChatComplement::class => MockResponse::make(status: Response::HTTP_OK),
         ]);
     }
 }
