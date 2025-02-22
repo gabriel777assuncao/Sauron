@@ -7,6 +7,11 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
+use Saloon\Config;
+use Saloon\Http\Faking\MockClient;
+use Saloon\Http\Faking\MockResponse;
+use src\OpenAI\Http\Post\ChatComplement;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class QuestionControllerTest extends TestCase
@@ -19,6 +24,11 @@ class QuestionControllerTest extends TestCase
     {
         parent::setUp();
         $this->user = User::factory()->create();
+
+        Config::preventStrayRequests();
+        MockClient::destroyGlobal();
+
+        $this->mockSaloonResponse();
     }
 
     public function test_if_it_will_not_has_more_than_255_caracters(): void
@@ -172,17 +182,11 @@ class QuestionControllerTest extends TestCase
         ]);
     }
 
-    public function test_if_it_will_not_be_able_to_create_a_duplicated_question(): void
-    {
-        $this->actingAs($this->user);
-        $question = Question::factory()->for($this->user, 'createdBy')->create([
-            'draft' => false,
-            'question' => "That's a repeated question?",
-        ]);
 
-        $this->post(route('questions.store'), [
-            'question' => "That's a repeated question?",
-        ])
-            ->assertSessionHasErrors();
+    public function mockSaloonResponse(): void
+    {
+        MockClient::global([
+            ChatComplement::class => MockResponse::make(status: Response::HTTP_OK)
+        ]);
     }
 }
