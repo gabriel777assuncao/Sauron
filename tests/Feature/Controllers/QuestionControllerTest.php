@@ -182,11 +182,10 @@ class QuestionControllerTest extends TestCase
         ]);
     }
 
-
     public function mockSaloonResponse(): void
     {
         MockClient::global([
-            ChatComplement::class => MockResponse::make(status: Response::HTTP_OK)
+            ChatComplement::class => MockResponse::make(status: Response::HTTP_OK),
         ]);
     }
 }
