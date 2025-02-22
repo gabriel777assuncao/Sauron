@@ -5,6 +5,7 @@ namespace src\OpenAI\Manager;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Saloon\Exceptions\Request\FatalRequestException;
+use Saloon\Exceptions\Request\Statuses\ForbiddenException;
 use Saloon\Exceptions\Request\Statuses\TooManyRequestsException;
 use src\OpenAI\Http\OpenAIConnector;
 use src\OpenAI\Http\Post\ChatComplement;
@@ -39,7 +40,16 @@ class ChatComplementsManager
             );
         } catch (FatalRequestException $exception){
             Log::error(
-                'Error when trying to send a chat complement: an fatal error occurred.',
+                'Error when trying to send a chat complement: a fatal error occurred.',
+                [
+                    'message' => $exception->getMessage(),
+                    'trace' => $exception->getCode(),
+                    'question' => $question,
+                ],
+            );
+        } catch (ForbiddenException $exception){
+            Log::error(
+                'Error when trying to send a chat complement: unauthorized error occurred.',
                 [
                     'message' => $exception->getMessage(),
                     'trace' => $exception->getCode(),
@@ -48,7 +58,7 @@ class ChatComplementsManager
             );
         } catch (Throwable $exception) {
             Log::error(
-                'Error when trying to send a chat complement: unkown error.',
+                'Error when trying to send a chat complement: unknown error.',
                 [
                     'message' => $exception->getMessage(),
                     'trace' => $exception->getCode(),
@@ -58,5 +68,8 @@ class ChatComplementsManager
 
             throw $exception;
         }
+
+        return null;
     }
 }
+
