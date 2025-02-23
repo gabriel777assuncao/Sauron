@@ -8,6 +8,7 @@ use App\Models\Question;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class QuestionController extends Controller
@@ -18,8 +19,8 @@ class QuestionController extends Controller
     {
         return view('dashboard', [
             'questions' => Question::query()
-                ->when(request()->has('search'), fn (Builder $query) => $query->where(
-                    'question', 'like', '%'.request()->search.'%'))
+                ->when(request()->has('search'), fn (Builder $query) => $query->whereRaw('LOWER(question) LIKE ?', ['%'.Str::lower(request()->search).'%'])
+                )
                 ->withCount([
                     'votes as count_likes' => function ($query) {
                         $query->where('likes', '>', 0);
@@ -30,7 +31,8 @@ class QuestionController extends Controller
                 ])
                 ->orderByDesc('count_likes')
                 ->orderByDesc('count_unlikes')
-                ->paginate(10),
+                ->paginate(5)
+                ->appends(request()->query()),
         ]);
     }
 
