@@ -19,8 +19,7 @@ class QuestionController extends Controller
     {
         return view('dashboard', [
             'questions' => Question::query()
-                ->when(request()->has('search'), fn (Builder $query) => $query->whereRaw('LOWER(question) LIKE ?', ['%'.Str::lower(request()->search).'%'])
-                )
+                ->when(request()->has('search'), fn (Builder $query) => $query->whereRaw('LOWER(question) LIKE ?', ['%'.Str::lower(request()->search).'%']))
                 ->withCount([
                     'votes as count_likes' => function ($query) {
                         $query->where('likes', '>', 0);
